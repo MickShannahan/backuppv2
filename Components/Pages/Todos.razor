@@ -1,0 +1,54 @@
+@page "/todos"
+@inject SettingsService SettingsService
+
+<h3>Test Page</h3>
+<div>@counter<button @onclick="increaseCount">🔥</button></div>
+
+<div>@todos.FindAll(t => !t.Complete).Count todos left</div>
+<div class="mb-2 input-group">
+    <input @bind="todoInput" type="text" />
+    <button @onclick="submitTodo" class="btn btn-primary"><i class="mdi mdi-plus"></i></button>
+</div>
+
+@foreach (Todo todo in todos)
+{
+    <div class="input-group">
+        <input @bind="todo.Complete" type="checkbox">
+        <div>@todo.Name</div>
+    </div>
+}
+
+@code {
+
+    private AppSettings appSettings = new();
+    private int counter = 0;
+
+    private List<Todo> todos = [];
+    private int todoId = 0;
+
+    private string todoInput = "";
+
+    @* NOTE onMounted *@
+    protected override void OnInitialized()
+    {
+        appSettings = SettingsService.Load();
+    }
+
+    private void submitTodo()
+    {
+        Todo newTodo = new Todo() { Name = todoInput, Complete = false, Id = DateTime.Now.Millisecond };
+        todoInput = "";
+        todos.Add(newTodo);
+    }
+
+    private void increaseCount()
+    {
+        counter++;
+    }
+
+    private void updateTodo(Todo todo)
+    {
+
+    }
+
+}

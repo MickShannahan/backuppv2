@@ -1,0 +1,64 @@
+@page "/settings"
+@inject SettingsService settingsService
+@inject BackupsService backupsService
+@using CommunityToolkit.Maui.Storage
+
+<h3>Link Directories <i class="bi bi-link-45deg"></i></h3>
+<hr />
+
+<div class="d-flex mb-2 text-white">
+  <span class="bg-primary rounded-pill px-2" title="Directories linked"><i
+      class="bi bi-archive-fill"></i>@appsettings.Directories.Count</span>
+</div>
+<section class="mb-2">
+  @foreach (DirectoryBackup directory in appsettings.Directories)
+  {
+    <DirectoryCard directory="@directory" />
+  }
+</section>
+
+<button @onclick=@SelectFolder class="btn btn-primary">Link Directory<i class="bi bi-folder-plus"></i></button>
+
+<button class="btn btn-danger" @onclick=@BackUpDirectories>BACK UP NOW</button>
+
+
+
+@code {
+
+  private AppSettings appsettings = new();
+
+  protected override void OnInitialized()
+  {
+    Console.WriteLine("Loaded App Settings");
+    appsettings = settingsService.Load();
+  }
+
+  private async Task SelectFolder()
+  {
+    Console.WriteLine("Selecting Folder");
+    var result = await FolderPicker.Default.PickAsync();
+
+    if (result.IsSuccessful)
+    {
+      DirectoryBackup dir = new DirectoryBackup() { Name = result.Folder.Name, FullPath = result.Folder.Path };
+      string json = JsonSerializer.Serialize(result.Folder);
+      Console.WriteLine($"➕🔗{json}");
+      appsettings.Directories.Add(dir);
+      settingsService.Save(appsettings);
+    }
+    else
+    {
+      Console.WriteLine("❌Select Canceled");
+    }
+  }
+
+  private async Task BackUpDirectories()
+  {
+    foreach (DirectoryBackup dir in appsettings.Directories)
+    {
+      if (dir.FullPath == null) return;
+      Console.WriteLine($"Backing up {dir.Name}");
+      await backupsService.BackupAllFiles(dir.FullPath);
+    }
+  }
+}
