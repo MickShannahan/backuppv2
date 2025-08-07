@@ -56,9 +56,9 @@
   {
     foreach (DirectoryBackup dir in appsettings.Directories)
     {
-      if (dir.FullPath == null) return;
-      Console.WriteLine($"Backing up {dir.Name}");
-      await backupsService.BackupAllFiles(dir.FullPath);
+      if (dir.FullPath == null || dir.Name == null) return;
+      Console.WriteLine($"1-- {dir.Name}");
+      await backupsService.BackupAllFiles(dir.FullPath, dir.Name);
     }
   }
 }
