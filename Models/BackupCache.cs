@@ -28,7 +28,7 @@ public class BackupCache
     string fileHash = FileHasher.ComputeHash(filePath);
     if (!_directories.ContainsKey(folderName))
       _directories.Add(folderName, new DirectoryBackup { Name = folderName, Files = [], FullPath = filePath });
-    _directories[folderName].Files[filePath] = new FileBackupRecord() { LastModifiedUtc = lastModified, Hash = fileHash };
+    _directories[folderName].Files[filePath] = new FileBackupRecord(filePath);
   }
 
 

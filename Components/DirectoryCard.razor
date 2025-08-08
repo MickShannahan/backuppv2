@@ -4,10 +4,22 @@
   <div class="card-body">
     <div><i class="mdi mdi-folder fs-5"></i> @directory.Name</div>
     <hr>
-    <div class="d-flex">
-      <div>
-        <i class="bi bi-box-fill"></i>
-        @directory.TotalSize
+    <div class="d-flex justify-content-between">
+      <div title="backed up files">
+        <i class="mdi mdi-file text-primary"></i>
+        @directory.FileCount
+      </div>
+      <div title="new files">
+        <i class="mdi mdi-file-plus text-info"></i>
+        @directory.NewFiles.Count
+      </div>
+      <div title="new files">
+        <i class="mdi mdi-file-alert text-warning"></i>
+        @directory.ChangedFiles.Count
+      </div>
+      <div title="missing files">
+        <i class="mdi mdi-file-minus text-danger"></i>
+        @directory.MissingFiles.Count
       </div>
       <div>
         <button @onclick=@RemoveTrackedDirectory class="btn btn-outline-danger"><i
@@ -21,6 +33,7 @@
 
   [Parameter]
   public DirectoryBackup directory { get; set; }
+
 
   public void RemoveTrackedDirectory()
   {

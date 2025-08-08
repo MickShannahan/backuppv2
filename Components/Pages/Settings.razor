@@ -27,7 +27,7 @@
 @code {
 
   private AppSettings appsettings => AppState.AppSettings;
-  private Dictionary<string, DirectoryBackup> trackedDirectories => AppState.DirectoryBackups;
+  private Dictionary<string, DirectoryBackup> trackedDirectories => AppState.TrackedDirectories;
 
   protected override void OnInitialized()
   {
@@ -56,6 +56,7 @@
   private async Task BackUpDirectories()
   {
     backupsService.BackUpAllDirectories();
+
   }
 
   public void Dispose()

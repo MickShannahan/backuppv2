@@ -38,6 +38,7 @@ public static class MauiProgram
 		builder.Services.AddSingleton<SettingsService>();
 		builder.Services.AddScoped<AzureService>();
 		builder.Services.AddScoped<BackupsService>();
+		builder.Services.AddSingleton<DirectoryWatcherService>();
 
 		var azureSettings = new AzureSettings();
 		config.GetSection("Azure").Bind(azureSettings);

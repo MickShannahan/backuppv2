@@ -2,8 +2,12 @@
 
 public partial class App : Application
 {
-	public App()
+	private readonly DirectoryWatcherService _w;
+	private readonly AppState _a;
+	public App(DirectoryWatcherService watcher, AppState appState)
 	{
+		_a = appState;
+		_w = watcher;
 		InitializeComponent();
 	}
 
