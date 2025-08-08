@@ -14,11 +14,9 @@ public class AzureService
     _containerClient = new BlobContainerClient(_settings.ConnectionString, _settings.ContainerName);
   }
 
-  public async Task UploadFileAsync(string filePath)
+  public async Task UploadFileAsync(string filePath, string uploadPath)
   {
-    var fileName = Path.GetFileName(filePath);
-    Console.WriteLine($"{fileName}");
-    var blobClient = _containerClient.GetBlobClient($"{fileName}");
+    var blobClient = _containerClient.GetBlobClient($"{uploadPath}");
 
     await using var fileStream = File.OpenRead(filePath);
     var res = await blobClient.UploadAsync(fileStream, overwrite: true);

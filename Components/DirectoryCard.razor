@@ -1,6 +1,30 @@
-<div>@directory.Name</div>
+@inject BackupsService backupsService
+
+<article class="card mb-2" style="max-width: 50%; flex-grow: 1">
+  <div class="card-body">
+    <div><i class="mdi mdi-folder fs-5"></i> @directory.Name</div>
+    <hr>
+    <div class="d-flex">
+      <div>
+        <i class="bi bi-box-fill"></i>
+        @directory.TotalSize
+      </div>
+      <div>
+        <button @onclick=@RemoveTrackedDirectory class="btn btn-outline-danger"><i
+            class="mdi mdi-delete-forever"></i></button>
+      </div>
+    </div>
+  </div>
+</article>
 
 @code {
+
   [Parameter]
   public DirectoryBackup directory { get; set; }
+
+  public void RemoveTrackedDirectory()
+  {
+    Console.WriteLine($"[UN-TRACK] {directory.Name}");
+    backupsService.RemoveDirectoryFromBackup(directory);
+  }
 }

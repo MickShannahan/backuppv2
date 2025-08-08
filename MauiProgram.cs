@@ -34,6 +34,7 @@ public static class MauiProgram
 
 
 		builder.Services.AddMauiBlazorWebView();
+		builder.Services.AddSingleton<AppState>();
 		builder.Services.AddSingleton<SettingsService>();
 		builder.Services.AddScoped<AzureService>();
 		builder.Services.AddScoped<BackupsService>();

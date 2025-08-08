@@ -1,17 +1,18 @@
 @page "/settings"
+@inject AppState AppState
 @inject SettingsService settingsService
 @inject BackupsService backupsService
 @using CommunityToolkit.Maui.Storage
 
-<h3>Link Directories <i class="bi bi-link-45deg"></i></h3>
+<h3>Linked Directories <i class="bi bi-link-45deg"></i></h3>
 <hr />
 
 <div class="d-flex mb-2 text-white">
   <span class="bg-primary rounded-pill px-2" title="Directories linked"><i
-      class="bi bi-archive-fill"></i>@appsettings.Directories.Count</span>
+      class="bi bi-archive-fill me-2"></i>@appsettings.Directories.Count</span>
 </div>
-<section class="mb-2">
-  @foreach (DirectoryBackup directory in appsettings.Directories)
+<section class="mb-2 d-flex flex-wrap gap-2">
+  @foreach (DirectoryBackup directory in trackedDirectories.Values)
   {
     <DirectoryCard directory="@directory" />
   }
@@ -25,12 +26,13 @@
 
 @code {
 
-  private AppSettings appsettings = new();
+  private AppSettings appsettings => AppState.AppSettings;
+  private Dictionary<string, DirectoryBackup> trackedDirectories => AppState.DirectoryBackups;
 
   protected override void OnInitialized()
   {
-    Console.WriteLine("Loaded App Settings");
-    appsettings = settingsService.Load();
+    AppState.OnChange += StateHasChanged;
+    settingsService.Load();
   }
 
   private async Task SelectFolder()
@@ -43,8 +45,7 @@
       DirectoryBackup dir = new DirectoryBackup() { Name = result.Folder.Name, FullPath = result.Folder.Path };
       string json = JsonSerializer.Serialize(result.Folder);
       Console.WriteLine($"➕🔗{json}");
-      appsettings.Directories.Add(dir);
-      settingsService.Save(appsettings);
+      backupsService.AddDirectoryToBackup(dir);
     }
     else
     {
@@ -54,11 +55,12 @@
 
   private async Task BackUpDirectories()
   {
-    foreach (DirectoryBackup dir in appsettings.Directories)
-    {
-      if (dir.FullPath == null || dir.Name == null) return;
-      Console.WriteLine($"1-- {dir.Name}");
-      await backupsService.BackupAllFiles(dir.FullPath, dir.Name);
-    }
+    backupsService.BackUpAllDirectories();
+  }
+
+  public void Dispose()
+  {
+    AppState.OnChange -= StateHasChanged;
+
   }
 }

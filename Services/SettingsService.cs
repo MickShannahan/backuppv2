@@ -8,34 +8,37 @@ public class SettingsService
 {
   private const string SettingsFile = "settings.json";
   private readonly AzureSettings _azureSettings;
+  private readonly AppState _appState;
 
-  public SettingsService(AzureSettings azureSettings)
+  public SettingsService(AzureSettings azureSettings, AppState appState)
   {
     _azureSettings = azureSettings;
-    Console.WriteLine($"Loaded AZ with {_azureSettings.ContainerName}, {_azureSettings.ConnectionString}");
+    _appState = appState;
   }
 
-  public AppSettings Load()
+  public void Load()
   {
     if (!File.Exists(SettingsFile))
     {
       CreateSaveFile();
-      return new AppSettings();
+      return;
     }
 
     var json = File.ReadAllText(SettingsFile);
-    return JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+    AppSettings settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
+    _appState.AppSettings = settings;
   }
 
-  public void Save(AppSettings settings)
+  public void Save()
   {
+    AppSettings settings = _appState.AppSettings;
     var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
     File.WriteAllText(SettingsFile, json);
   }
 
   private void CreateSaveFile()
   {
-    AppSettings defaultSettings = new();
-    Save(defaultSettings);
+    _appState.AppSettings = new AppSettings();
+    Save();
   }
 }
