@@ -47,35 +47,36 @@ public class DirectoryWatcherService
   {
     Console.WriteLine($"(o) {eventArgs.ChangeType} > {eventArgs.FullPath}");
 
-    string directoryPath = Path.GetDirectoryName(eventArgs.FullPath);
-    if (directoryPath == null) return;
-
-    var trackedDirs = _appState.TrackedDirectories.Values.ToList();
-    var trackedDirectory = trackedDirs.Find(d => d.Subdirectories.Contains(directoryPath));
-
-    if (trackedDirectory == null) return;
-    if (!_appState.TrackedDirectories.TryGetValue(trackedDirectory.Name, out var backup)) return;
-
-    switch (eventArgs.ChangeType)
-    {
-      case WatcherChangeTypes.Created:
-      case WatcherChangeTypes.Changed:
-        backup.Files[eventArgs.FullPath] = new FileBackupRecord(eventArgs.FullPath);
-        break;
-
-      case WatcherChangeTypes.Deleted:
-        backup.Files.Remove(eventArgs.FullPath);
-        break;
-
-      case WatcherChangeTypes.Renamed:
-        if (eventArgs is RenamedEventArgs renamedEventArgs)
-        {
-          backup.Files.Remove(eventArgs.FullPath);
-          backup.Files[renamedEventArgs.FullPath] = new FileBackupRecord(renamedEventArgs.FullPath);
-        }
-        break;
-    }
-    Console.WriteLine($"[bu] {backup.Files.Count} {backup.FileCount}");
     _appState.NotifyStateChange();
+
+    // REVIEW right now i don't need literally any of this 
+    // string directoryPath = Path.GetDirectoryName(eventArgs.FullPath);
+    // if (directoryPath == null) return;
+
+    // var trackedDirs = _appState.TrackedDirectories.Values.ToList();
+    // var trackedDirectory = trackedDirs.Find(d => d.Subdirectories.Contains(directoryPath));
+
+    // if (trackedDirectory == null) return;
+    // if (!_appState.TrackedDirectories.TryGetValue(trackedDirectory.Name, out var backup)) return;
+
+    // switch (eventArgs.ChangeType)
+    // {
+    //   case WatcherChangeTypes.Created:
+    //   case WatcherChangeTypes.Changed:
+    //     // backup.Files[eventArgs.FullPath] = new FileBackupRecord(eventArgs.FullPath);
+    //     break;
+
+    //   case WatcherChangeTypes.Deleted:
+    //     // backup.Files.Remove(eventArgs.FullPath);
+    //     break;
+
+    //   case WatcherChangeTypes.Renamed:
+    //     if (eventArgs is RenamedEventArgs renamedEventArgs)
+    //     {
+    //       // backup.Files.Remove(eventArgs.FullPath);
+    //       // backup.Files[renamedEventArgs.FullPath] = new FileBackupRecord(renamedEventArgs.FullPath);
+    //     }
+    //     break;
+    // }
   }
 }

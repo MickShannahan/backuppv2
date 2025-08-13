@@ -1,4 +1,6 @@
-﻿namespace backuppv2;
+﻿using H.NotifyIcon;
+
+namespace backuppv2;
 
 public partial class App : Application
 {
@@ -15,4 +17,5 @@ public partial class App : Application
 	{
 		return new Window(new MainPage()) { Title = "backuppv2" };
 	}
+
 }

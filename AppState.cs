@@ -2,11 +2,19 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 public class AppState : ObservableObject
 {
-
   public AppStatus Status { get; set; } = AppStatus.IDLE;
-  public AppSettings AppSettings = new();
-  public Dictionary<string, DirectoryBackup> TrackedDirectories = [];
+  private Dictionary<string, DirectoryBackup> _trackedDirectories = new();
+  public Dictionary<string, DirectoryBackup> TrackedDirectories
+  {
+    get => _trackedDirectories;
+    set
+    {
+      _trackedDirectories = value;
+      NotifyStateChange();
+    }
+  }
   public string User = "Mick";
+  public AppSettings AppSettings = new();
   public event Action? OnChange;
   private const string BackupFile = "files_cache.json";
   private readonly BackupCache _cache;
@@ -21,13 +29,14 @@ public class AppState : ObservableObject
 
   private void Load()
   {
-    Console.WriteLine($"loading Cache {_cache.Directories.Count}");
-    TrackedDirectories = _cache.Directories;
+    Console.WriteLine($"loading Cache {_cache.LinkedDirectories.Count}");
+    TrackedDirectories = _cache.LinkedDirectories;
   }
 
 
   public async void NotifyStateChange()
   {
+    Console.WriteLine("-.>");
     if (_dispatcher.IsDispatchRequired)
     {
       _dispatcher.Dispatch(() => OnChange?.Invoke());

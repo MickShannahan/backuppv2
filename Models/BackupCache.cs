@@ -4,15 +4,13 @@ namespace backuppv2.Models;
 
 public class BackupCache
 {
-  public Dictionary<string, DirectoryBackup> Directories { get; set; } = [];
-  private Dictionary<string, DirectoryBackup> _directories => Directories;
-
+  public Dictionary<string, DirectoryBackup> LinkedDirectories { get; set; } = [];
 
   public bool IsFileChanged(string filePath, string folderName)
   {
     DateTime lastModified = File.GetLastWriteTimeUtc(filePath);
     string fileHash = FileHasher.ComputeHash(filePath);
-    _directories.TryGetValue(folderName, out var directoryBackup);
+    LinkedDirectories.TryGetValue(folderName, out var directoryBackup);
     if (directoryBackup != null && directoryBackup.Files.TryGetValue(filePath, out var cached)) // is in cache
     {
       return cached.LastModifiedUtc != lastModified || cached.Hash != fileHash; // both same, or change has happened
@@ -24,27 +22,26 @@ public class BackupCache
 
   public void UpdateRecord(string filePath, string folderName)
   {
-    DateTime lastModified = File.GetLastWriteTimeUtc(filePath);
-    string fileHash = FileHasher.ComputeHash(filePath);
-    if (!_directories.ContainsKey(folderName))
-      _directories.Add(folderName, new DirectoryBackup { Name = folderName, Files = [], FullPath = filePath });
-    _directories[folderName].Files[filePath] = new FileBackupRecord(filePath);
+    if (!LinkedDirectories.ContainsKey(folderName))
+      LinkedDirectories.Add(folderName, new DirectoryBackup { Name = folderName, Files = [], FullPath = filePath });
+
+    LinkedDirectories[folderName].Files[filePath] = new FileBackupRecord(filePath);
   }
 
 
   public void RemoveRecord(string filePath, string folderName)
   {
-    _directories.TryGetValue(folderName, out var directoryBackup);
+    LinkedDirectories.TryGetValue(folderName, out var directoryBackup);
     if (directoryBackup == null) return;
     directoryBackup.Files.Remove(filePath);
-    if (directoryBackup.Files.Count == 0) _directories.Remove(folderName);
+    if (directoryBackup.Files.Count == 0) LinkedDirectories.Remove(folderName);
   }
 
 
   public IEnumerable<string> GetTrackedFiles(string folderName)
   {
-    if (!_directories.ContainsKey(folderName)) return new Dictionary<string, FileBackupRecord>().Keys;
-    return _directories[folderName].Files.Keys;
+    if (!LinkedDirectories.ContainsKey(folderName)) return new Dictionary<string, FileBackupRecord>().Keys;
+    return LinkedDirectories[folderName].Files.Keys;
   }
 
 

@@ -2,7 +2,6 @@ namespace backuppv2.Models;
 
 public class DirectoryCurrent
 {
-
   public string? Name { get; set; }
   public string? FullPath { get; set; }
   public Dictionary<string, FileBackupRecord> Files { get; set; } = [];
