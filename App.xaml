@@ -2,7 +2,6 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:backuppv2"
-             xmlns:h="clr-namespace:H.NotifyIcon.Core;assembly=H.NotifyIcon"
              x:Class="backuppv2.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -13,16 +12,18 @@
             https://go.microsoft.com/fwlink/?linkid=2282329
         -->
 
-            <!-- <h:TrayIconWithContextMenu
-                x:Key="TrayIcon"
-                ToolTip="Backup App"
-                ContextMenu="{StaticResource MyTrayMenu}"/>
-
-            <h:PopupMenu x:Key="MyTrayMenu">
-                <h:PopupMenuItem Text="Open"
-                                 Click="OnTrayOpenClick"/>
-            </h:PopupMenu> -->
-
         </ResourceDictionary>
+        <!-- <h:TrayIcon
+            x:Key="TrayIcon"
+            Icon="appicon.ico"
+            ToolTipText="Back Up">
+            <h:TrayIconWithContextMenu>
+                <h:ContextMenu>
+                
+             xmlns:h="clr-namespace:H.NotifyIcon.Maui;assembly=H.NotifyIcon"
+
+                </h:ContextMenu>
+            </h:TrayIconWithContextMenu>
+        </h:TrayIcon> -->
     </Application.Resources>
 </Application>

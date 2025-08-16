@@ -4,10 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using H.NotifyIcon;
 using CommunityToolkit.Maui;
-using Microsoft.Maui.LifecycleEvents;
-using WinRT.Interop;
-using Microsoft.UI;
-
+using H.NotifyIcon.EfficiencyMode;
+using Microsoft.Maui;
 namespace backuppv2;
 
 public static class MauiProgram
@@ -49,35 +47,7 @@ public static class MauiProgram
 		config.GetSection("Azure").Bind(azureSettings);
 		builder.Services.AddSingleton(azureSettings);
 
-		// Intercept windows close
-		// #if WINDOWS
-		// 		builder.ConfigureLifecycleEvents(events =>
-		// 		{
-		// 			events.AddWindows(windows =>
-		// 	{
-		// 		windows.OnWindowCreated((window) =>
-		// 								{
-		// 									// Hook close event
-		// 									var hwnd = WindowNative.GetWindowHandle(window);
-		// 									var winId = Win32Interop.GetWindowIdFromWindow(hwnd);
-		// 									var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(winId);
-
-		// 									appWindow.Closing += (sender, args) =>
-		// 													{
-		// 														// Cancel close
-		// 														args.Cancel = true;
-
-		// 														// Hide instead
-		// 														MainThread.BeginInvokeOnMainThread(() =>
-		// 																					{
-		// 																						// Application.Current.Windows[0].Hide();
-		// 																						Application.Current.Quit();
-		// 																					});
-		// 													};
-		// 								});
-		// 	});
-		// 		});
-		// #endif
+		EfficiencyModeUtilities.SetEfficiencyMode(false);
 
 
 #if DEBUG

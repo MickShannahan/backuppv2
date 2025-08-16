@@ -1,9 +1,5 @@
 ﻿using System.Drawing;
-using System.Runtime.InteropServices;
-using H.NotifyIcon;
 using H.NotifyIcon.Core;
-using Windows.System;
-
 namespace backuppv2;
 
 public partial class App : Application
@@ -21,26 +17,56 @@ public partial class App : Application
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		var window = new Window(new MainPage()) { Title = "backuppv2" };
-		window.Created += (object s, EventArgs e) =>
-		{
-			var nativeWindow = (Microsoft.UI.Xaml.Window)window.Handler.PlatformView;
-			var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(nativeWindow);
+		Window window = new Window(new MainPage()) { Title = "backuppv2" };
 
-			var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(
-					Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd)
-			);
+		// window.Created += (object s, EventArgs e) =>
+		// {
+		// 	var nativeWindow = (Microsoft.UI.Xaml.Window)window.Handler.PlatformView;
+		// 	var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(nativeWindow);
 
-			appWindow.Closing += (sender, args) =>
-			{
-				args.Cancel = true; // stops the app from closing
-				window.Hide();
-			};
+		// 	var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(
+		// 			Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd)
+		// 	);
 
-			InitTrayIcon();
-		};
-
+		// 	appWindow.Closing += (sender, args) =>
+		// 	{
+		// 		args.Cancel = true; // stops the app from closing
+		// 		window.Hide();
+		// 	};
 		return window;
+	}
+
+	protected override void OnStart()
+	{
+		// Load the icon from the resources folder
+		string iconPath = Path.Combine(AppContext.BaseDirectory, "Resources", "AppIcon", "ArbysGundam1.ico");
+		using Icon icon = new Icon(iconPath);
+
+		TrayIconWithContextMenu trayIcon = new() { Icon = icon.Handle };
+
+		PopupMenu menu = new()
+		{
+			Items = {
+				new PopupMenuItem("🤠", (s,e)=> OnMenuTest(trayIcon))
+			}
+		};
+		trayIcon.ContextMenu = menu;
+		trayIcon.Create();
+		trayIcon.UpdateIcon(icon.Handle);
+
+		base.OnStart();
+	}
+
+	private void OnMenuTest(TrayIconWithContextMenu trayIcon)
+	{
+		// var toast = ToastNotificationManager();
+		Console.WriteLine("Holy JoJo Batman, It's Rorschach");
+		trayIcon.ShowNotification(title: "hello", message: "🦧", NotificationIcon.None, respectQuietTime: false);
+	}
+
+	private void OnTrayExitClicked()
+	{
+		// CloseWindow();
 	}
 
 
@@ -54,36 +80,5 @@ public partial class App : Application
 	{
 		Console.WriteLine("Exit Click");
 	}
-
-	private void InitTrayIcon()
-	{
-		// Init Icon
-		var iconPath = Path.Combine("Resources", "AppIcon", "ArbysGundam1.ico");
-		nint iconHandle = LoadIconHandle(iconPath);
-		var clickItem = new PopupMenuItem() { Text = "Open" };
-		clickItem.Click += OnTrayOpenClick;
-		PopupMenu menu = new()
-		{
-			Items = { clickItem }
-		};
-
-		_trayIcon = new TrayIconWithContextMenu
-		{
-			ContextMenu = menu,
-			ToolTip = "Back Up",
-			Icon = iconHandle,
-			Visibility = IconVisibility.Visible
-		};
-
-		_trayIcon.Show();
-	}
-
-	private static nint LoadIconHandle(string iconPath)
-	{
-		return LoadImage(IntPtr.Zero, iconPath, 1, 0, 0, 0x00000010);
-	}
-
-	[DllImport("user32.dll", SetLastError = true)]
-	private static extern nint LoadImage(IntPtr hInst, string lpszName, uint uType, int cx, int cy, uint fuLoad);
 
 }
