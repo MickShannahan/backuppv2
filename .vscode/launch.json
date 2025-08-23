@@ -2,16 +2,33 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "🌴.NET MAUI Windows",
+      "name": "🌴Run MAUI App",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build",
-      "program": "${workspaceFolder}/bin/Debug/net9.0-windows10.0.19041.0/win10-x64/backuppv2.exe",
+      "preLaunchTask": "none",
+      "program": "${workspaceFolder}/bin/Debug/net9.0-windows10.0.19041.0/win10-x64/${workspaceFolderBasename}.exe",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "stopAtEntry": false,
       "console": "internalConsole",
-      "justMyCode": false
+      "stopAtEntry": false
+    },
+    {
+      "name": "🍸Run MAUI App (watch)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "watch-run",
+      "program": "${workspaceFolder}/bin/Debug/net9.0-windows10.0.19041.0/win10-x64/${workspaceFolderBasename}.exe",
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "stopAtEntry": false
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Watch + Debug",
+      "configurations": [
+        "Run MAUI App (dotnet watch)"
+      ]
     }
   ]
 }
