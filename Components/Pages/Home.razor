@@ -1,5 +1,67 @@
 ﻿@page "/"
+@inject AppState AppState
+@inject SettingsService settingsService
+@inject BackupsService backupsService
+@using CommunityToolkit.Maui.Storage
 
-<h1>Hello, world!</h1>
+<h3>Linked Directories <i class="bi bi-link-45deg"></i></h3>
+<hr />
 
-Welcome to your new app.
+<div class="d-flex mb-2 text-white">
+  <span class="bg-primary rounded-pill px-2" title="Directories linked"><i
+      class="bi bi-archive-fill me-2"></i>@trackedDirectories.Count</span>
+</div>
+<section class="mb-2 d-flex flex-wrap gap-2">
+  @foreach (DirectoryBackup directory in trackedDirectories.Values)
+  {
+    <DirectoryCard directory="@directory" />
+  }
+</section>
+
+<button @onclick=@SelectFolder class="btn btn-primary">Link Directory<i class="bi bi-folder-plus"></i></button>
+
+<button class="btn btn-danger" @onclick=@BackUpDirectories>BACK UP NOW</button>
+
+
+
+@code {
+
+  private AppSettings appsettings => AppState.AppSettings;
+  private Dictionary<string, DirectoryBackup> trackedDirectories => AppState.TrackedDirectories;
+
+  protected override void OnInitialized()
+  {
+    AppState.OnChange += StateHasChanged;
+    settingsService.Load();
+  }
+
+  private async Task SelectFolder()
+  {
+    Console.WriteLine("Selecting Folder");
+    var result = await FolderPicker.Default.PickAsync();
+
+    if (result.IsSuccessful)
+    {
+      DirectoryBackup dir = new DirectoryBackup() { Name = result.Folder.Name, FullPath = result.Folder.Path };
+      string json = JsonSerializer.Serialize(result.Folder);
+      Console.WriteLine($"➕🔗{json}");
+      backupsService.AddDirectoryToBackup(dir);
+    }
+    else
+    {
+      Console.WriteLine("❌Select Canceled");
+    }
+  }
+
+  private async Task BackUpDirectories()
+  {
+    backupsService.BackUpAllDirectories();
+
+  }
+
+  public void Dispose()
+  {
+    AppState.OnChange -= StateHasChanged;
+
+  }
+}

@@ -6,10 +6,11 @@
 			"type": "shell",
 			"command": "dotnet",
 			"args": [
-				"watch",
-				"--no-hot-reload",
+				"run",
 				"--project",
-				"${workspaceFolder}"
+				"${workspaceFolder}",
+				"--framework",
+				"net9.0-windows10.0.19041.0"
 			],
 			"isBackground": true,
 			"problemMatcher": "$msCompile"

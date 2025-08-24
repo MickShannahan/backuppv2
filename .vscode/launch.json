@@ -27,7 +27,7 @@
     {
       "name": "Watch + Debug",
       "configurations": [
-        "Run MAUI App (dotnet watch)"
+        "🍸Run MAUI App (watch)"
       ]
     }
   ]

@@ -13,17 +13,5 @@
         -->
 
         </ResourceDictionary>
-        <!-- <h:TrayIcon
-            x:Key="TrayIcon"
-            Icon="appicon.ico"
-            ToolTipText="Back Up">
-            <h:TrayIconWithContextMenu>
-                <h:ContextMenu>
-                
-             xmlns:h="clr-namespace:H.NotifyIcon.Maui;assembly=H.NotifyIcon"
-
-                </h:ContextMenu>
-            </h:TrayIconWithContextMenu>
-        </h:TrayIcon> -->
     </Application.Resources>
 </Application>

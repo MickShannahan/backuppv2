@@ -2,10 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using H.NotifyIcon;
 using CommunityToolkit.Maui;
-using H.NotifyIcon.EfficiencyMode;
 using Microsoft.Maui;
+using Microsoft.Maui.LifecycleEvents;
 namespace backuppv2;
 
 public static class MauiProgram
@@ -25,7 +24,6 @@ public static class MauiProgram
 		builder
 			.UseMauiApp<App>()
 			.UseMauiCommunityToolkit()
-			.UseNotifyIcon()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -35,6 +33,9 @@ public static class MauiProgram
 			logging.AddDebug();
 		});
 
+		var azureSettings = new AzureSettings();
+		config.GetSection("Azure").Bind(azureSettings);
+		builder.Services.AddSingleton(azureSettings);
 
 		builder.Services.AddMauiBlazorWebView();
 		builder.Services.AddSingleton<AppState>();
@@ -43,11 +44,10 @@ public static class MauiProgram
 		builder.Services.AddScoped<BackupsService>();
 		builder.Services.AddSingleton<DirectoryWatcherService>();
 
-		var azureSettings = new AzureSettings();
-		config.GetSection("Azure").Bind(azureSettings);
-		builder.Services.AddSingleton(azureSettings);
-
-		EfficiencyModeUtilities.SetEfficiencyMode(false);
+#if WINDOWS
+		builder.Services.AddSingleton<ITrayService, WinUI.TrayService>();
+		builder.Services.AddSingleton<INotificationService, WinUI.NotificationService>();
+#endif
 
 
 #if DEBUG

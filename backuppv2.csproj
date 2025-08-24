@@ -4,6 +4,7 @@
         <MauiVersion>9.0.80</MauiVersion>
         <!-- <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks> -->
         <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
         <!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
 
@@ -22,6 +23,9 @@
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
         <Nullable>enable</Nullable>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+        <!-- Required for C# Hot Reload -->
+        <UseInterpreter Condition="'$(Configuration)' == 'Debug'">True</UseInterpreter>
 
         <!-- Display name -->
         <ApplicationTitle>backuppv2</ApplicationTitle>
@@ -65,15 +69,21 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
+		<PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.0.1" />
+		<PackageReference Include="PInvoke.User32" Version="0.7.104" />
+	</ItemGroup>
+
     <ItemGroup>
         <PackageReference Include="Azure.Storage.Blobs" Version="12.25.0" />
         <PackageReference Include="CommunityToolkit.Maui" Version="12.1.0" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-        <PackageReference Include="H.NotifyIcon.Maui" Version="2.3.0" />
+        <!-- <PackageReference Include="H.NotifyIcon.Maui" Version="2.3.0" /> -->
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
+    
         
     </ItemGroup>
 
