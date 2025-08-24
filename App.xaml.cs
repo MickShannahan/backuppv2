@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Platform;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
+using WinRT.Interop;
 namespace backuppv2;
 
 public partial class App : Application
@@ -52,7 +54,7 @@ public partial class App : Application
 	{
 		Console.WriteLine("Clicked");
 		_notificationService.ShowNotification("Sup", "Cool");
-		var popupPage = new Popup();
+		var popupPage = new PopupWindow();
 		var displayInfo = DeviceDisplay.Current.MainDisplayInfo;
 		var secondWindow = new Window(popupPage)
 		{
@@ -61,15 +63,6 @@ public partial class App : Application
 			X = displayInfo.Width - 300,
 			Y = displayInfo.Height - 600,
 		};
-
-		// Remove title bar and border using OverlappedPresenter
-		if (secondWindow.Handler?.PlatformView is Microsoft.UI.Xaml.Window nativeWindow)
-		{
-			var appWindow = AppWindow.GetFromWindowId(
-				Microsoft.UI.Win32Interop.GetWindowIdFromWindow(nativeWindow.GetWindowHandle()));
-			var presenter = appWindow.Presenter as OverlappedPresenter;
-			presenter?.SetBorderAndTitleBar(false, false);
-		}
 
 		App.Current?.OpenWindow(secondWindow);
 		// var window = Application.Current.Windows.FirstOrDefault();

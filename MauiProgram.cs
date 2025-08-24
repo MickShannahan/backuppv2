@@ -34,21 +34,21 @@ public static class MauiProgram
 							{
 								windowsLifecycleBuilder.OnWindowCreated(window =>
 								 {
-									 window.SystemBackdrop = new DesktopAcrylicBackdrop();
+									 window.SystemBackdrop = new MicaBackdrop();
 
-									 IntPtr hWnd = WindowNative.GetWindowHandle(window);
-									 WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
-									 AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
+									 //  IntPtr hWnd = WindowNative.GetWindowHandle(window);
+									 //  WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+									 //  AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
 
-									 // Get the OverlappedPresenter to control window behavior
-									 if (appWindow.Presenter is OverlappedPresenter presenter)
-									 {
-										 presenter.IsMaximizable = false; // Disable maximize button
-										 presenter.IsMinimizable = false; // Disable minimize button
+									 //  // Get the OverlappedPresenter to control window behavior
+									 //  if (appWindow.Presenter is OverlappedPresenter presenter)
+									 //  {
+									 // 	 presenter.IsMaximizable = false; // Disable maximize button
+									 // 	 presenter.IsMinimizable = false; // Disable minimize button
 
-										 //  presenter.IsResizable = false;   // Prevent resizing
-										 presenter.SetBorderAndTitleBar(true, false); // Hide border and title bar
-									 }
+									 // 	 //  presenter.IsResizable = false;   // Prevent resizing
+									 // 	 presenter.SetBorderAndTitleBar(true, false); // Hide border and title bar
+									 //  }
 								 });
 							});
 #endif
