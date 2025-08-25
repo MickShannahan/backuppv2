@@ -1,4 +1,12 @@
 
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
+using WinRT.Interop;
+using MauiApp = Microsoft.Maui.Controls.Application;
+using UIWindow = Microsoft.UI.Xaml.Window;
+using MauiWindow = Microsoft.Maui.Controls.Window;
+
 namespace backuppv2;
 
 public static class WindowExtensions
@@ -28,5 +36,35 @@ public static class WindowExtensions
   {
     PInvoke.User32.ShowWindow(Hwnd, PInvoke.User32.WindowShowStyle.SW_MINIMIZE);
     PInvoke.User32.ShowWindow(Hwnd, PInvoke.User32.WindowShowStyle.SW_HIDE);
+  }
+
+  public static void SetAsTransientWindow(this MauiWindow window)
+  {
+    var appWindow = GetAppWindow(window);
+
+    if (appWindow.Presenter is OverlappedPresenter presenter)
+    {
+      // Make the window always on top
+      presenter.IsAlwaysOnTop = true;
+
+      // Subscribe to the window's "focus lost" event to close it
+      window.Deactivated += (sender, args) =>
+      {
+        MauiApp.Current?.CloseWindow(MauiApp.Current.Windows[0]);
+        // // Ensure the window is not the main one before closing
+        // if (Application.Current?.Windows.Count > 1)
+        // {
+        //   Application.Current.CloseWindow(sender as Window);
+        // }
+      };
+    }
+  }
+
+  private static AppWindow GetAppWindow(MauiWindow window)
+  {
+    Console.WriteLine("Getting Window", window.Id);
+    var handle = WindowNative.GetWindowHandle(window);
+    var windowId = Win32Interop.GetWindowIdFromWindow(handle);
+    return AppWindow.GetFromWindowId(windowId);
   }
 }
