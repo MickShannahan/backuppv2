@@ -2,18 +2,16 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "watch-run",
+			"label": "app-build",
 			"type": "shell",
 			"command": "dotnet",
 			"args": [
-				"run",
-				"--project",
-				"${workspaceFolder}",
-				"--framework",
-				"net9.0-windows10.0.19041.0"
+				"build",
+				"-c",
+				"Debug"
 			],
-			"isBackground": true,
-			"problemMatcher": "$msCompile"
+			"isBackground": false,
+			"problemMatcher": "$msCompile",
 		}
 	]
 }

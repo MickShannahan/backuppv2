@@ -1,0 +1,20 @@
+{
+  "name": "backuppv2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sass": "sass ./wwwroot/scss/style.scss ./wwwroot/css/app.css",
+    "sass:watch": "sass --watch ./wwwroot/scss/style.scss ./wwwroot/css/app.css"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "sass": "^1.92.1"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8"
+  }
+}

@@ -11,6 +11,7 @@ using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Dispatching;
+using Microsoft.AspNetCore.Components;
 namespace backuppv2;
 
 public static class MauiProgram
@@ -35,20 +36,6 @@ public static class MauiProgram
 								windowsLifecycleBuilder.OnWindowCreated(window =>
 								 {
 									 window.SystemBackdrop = new MicaBackdrop();
-
-									 //  IntPtr hWnd = WindowNative.GetWindowHandle(window);
-									 //  WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
-									 //  AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
-
-									 //  // Get the OverlappedPresenter to control window behavior
-									 //  if (appWindow.Presenter is OverlappedPresenter presenter)
-									 //  {
-									 // 	 presenter.IsMaximizable = false; // Disable maximize button
-									 // 	 presenter.IsMinimizable = false; // Disable minimize button
-
-									 // 	 //  presenter.IsResizable = false;   // Prevent resizing
-									 // 	 presenter.SetBorderAndTitleBar(true, false); // Hide border and title bar
-									 //  }
 								 });
 							});
 #endif
@@ -88,6 +75,18 @@ public static class MauiProgram
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
+
+		// 🔴 Global exception hooks here
+		AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+		{
+			System.Diagnostics.Debug.WriteLine($"[UnhandledException] {e.ExceptionObject}");
+		};
+
+		TaskScheduler.UnobservedTaskException += (s, e) =>
+		{
+			System.Diagnostics.Debug.WriteLine($"[UnobservedTaskException] {e.Exception}");
+			e.SetObserved();
+		};
 #endif
 
 		return builder.Build();
