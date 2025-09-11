@@ -1,7 +1,17 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
+<div style="--nav-width: @navWidth" class="@navShown page">
     <div class="sidebar">
+        @* <button @onclick="() => navOpen = !navOpen" class="btn">
+            @if (navOpen)
+            {
+                <span class="mdi mdi-menu-open" title="hide menu"></span>
+            }
+            else
+            {
+                <span class="mdi mdi-menu-close" title="show menu"></span>
+            }
+        </button> *@
         <NavMenu />
     </div>
 
@@ -11,3 +21,9 @@
         </article>
     </main>
 </div>
+
+@code {
+    private bool navOpen { get; set; } = true;
+    private string navWidth => navOpen ? "300px" : "50px";
+    private string navShown => navOpen ? "show-nav" : "hide-nav";
+}

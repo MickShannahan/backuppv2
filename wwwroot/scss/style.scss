@@ -1,5 +1,19 @@
 @import '_main.scss';
 
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bs-body-bg);
+  background-image: linear-gradient(to top left, rgba(var(--bs-indigo-rgb), .1), var(--bs-body-bg));
+  padding: 1dvh 1dvh;
+}
+
+#app {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
 
 
 .valid.modified:not([type=checkbox]) {
@@ -7,11 +21,11 @@
 }
 
 .invalid {
-  outline: 1px solid #e50000;
+  outline: 1px solid rgba(var(--bs-danger-rgb), 1);
 }
 
 .validation-message {
-  color: #e50000;
+  color: rgba(var(--bs-danger-rgb), 1);
 }
 
 #blazor-error-ui {

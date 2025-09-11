@@ -8,3 +8,10 @@ public class AppSettings
   public int FrequencyMinutes { get; set; } = 0;
   public string ScheduledTime { get; set; } = ""; // e.g., "02:00"
 }
+
+public class AppTheme
+{
+  public string BackgroundImage { get; set; } = "";
+  public string ColorPrimary { get; set; } = "indigo";
+  public string ColorSecondary { get; set; } = "blue";
+}
