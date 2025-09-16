@@ -5,9 +5,13 @@
 @using CommunityToolkit.Maui.Storage
 
 
-
-<h3>Linked Directories <i class="bi bi-link-45deg"></i></h3>
-<hr />
+<div class="d-flex flex-wrap g-2 border-bottom">
+  <h3>Linked Directories <i class="bi bi-link-45deg"></i></h3>
+  <hr />
+  <button @onclick=@SelectFolder class="btn btn-primary bg-glass">Link Directory<i
+      class="bi bi-folder-plus"></i></button>
+  <button class="btn btn-danger bg-glass" @onclick=@BackUpDirectories>BACK UP NOW</button>
+</div>
 
 <div class="d-flex mb-2 text-white">
   <span class="bg-primary rounded-pill px-2" title="Directories linked"><i
@@ -20,9 +24,6 @@
   }
 </section>
 
-<button @onclick=@SelectFolder class="btn btn-primary">Link Directory<i class="bi bi-folder-plus"></i></button>
-
-<button class="btn btn-danger" @onclick=@BackUpDirectories>BACK UP NOW</button>
 
 
 

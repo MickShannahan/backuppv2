@@ -1,30 +1,33 @@
 @inject BackupsService backupsService
 
-<article class="card mb-2" style="max-width: 50%; flex-grow: 1">
+<article class="card bg-dark bg-glass mb-2" style="min-width: 200px; max-width: 50%; flex-grow: 1">
   <div class="card-body">
-    <div><i class="mdi mdi-folder fs-5"></i> @directory.Name</div>
-    <hr>
-    <div class="d-flex justify-content-between">
-      <div title="backed up files">
-        <i class="mdi mdi-file text-primary"></i>
-        @directory.FileCount
-      </div>
-      <div title="new files">
-        <i class="mdi mdi-file-plus text-info"></i>
-        @directory.NewFiles.Count
-      </div>
-      <div title="new files">
-        <i class="mdi mdi-file-alert text-warning"></i>
-        @directory.ChangedFiles.Count
-      </div>
-      <div title="missing files">
-        <i class="mdi mdi-file-minus text-danger"></i>
-        @directory.MissingFiles.Count
-      </div>
+    <section class="d-flex justify-content-between">
+      <div><i class="mdi mdi-folder fs-5"></i> @directory.Name</div>
       <div>
-        <button @onclick=@RemoveTrackedDirectory class="btn btn-outline-danger"><i
+        <button @onclick=@RemoveTrackedDirectory class="btn btn-outline-danger border-0"><i
             class="mdi mdi-delete-forever"></i></button>
       </div>
+    </section>
+    <hr>
+    <div class="d-flex justify-content-between" style="--icon-color: var(--bs-primary)">
+      <div title="backed up files" class="icon-counter">
+        <i class="mdi mdi-file"></i>
+        <span class="counter">@directory.FileCount</span>
+      </div>
+      <div title="new files" class="icon-counter" style="--icon-color: var(--bs-info)">
+        <i class="mdi mdi-file-plus"></i>
+        <span class="counter">@directory.NewFiles.Count</span>
+      </div>
+      <div title="new files" class="icon-counter" style="--icon-color: var(--bs-indigo)">
+        <i class="mdi mdi-file-alert"></i>
+        <span class="counter">@directory.ChangedFiles.Count</span>
+      </div>
+      <div title="missing files" class="icon-counter" style="--icon-color: var(--bs-orange)">
+        <i class="mdi mdi-file-minus"></i>
+        <span class="counter">@directory.MissingFiles.Count</span>
+      </div>
+
     </div>
   </div>
 </article>

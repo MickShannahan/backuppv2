@@ -18,6 +18,14 @@ public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
+
+		// Keep app from running twice
+		using var mutex = new Mutex(true, "MyBackupAppMutex", out bool isNewInstance);
+		if (!isNewInstance)
+		{
+			return null;
+		}
+
 		var builder = MauiApp.CreateBuilder();
 
 		var config = new ConfigurationBuilder()
@@ -65,6 +73,8 @@ public static class MauiProgram
 		builder.Services.AddScoped<AzureService>();
 		builder.Services.AddScoped<BackupsService>();
 		builder.Services.AddSingleton<DirectoryWatcherService>();
+
+		builder.Services.AddSingleton<SchedulerService>();
 
 #if WINDOWS
 		builder.Services.AddSingleton<ITrayService, WinUI.TrayService>();

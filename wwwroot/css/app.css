@@ -12960,5 +12960,24 @@ body {
     padding-left: env(safe-area-inset-left);
   }
 }
+.bg-glass {
+  --bs-bg-opacity: .25;
+  backdrop-filter: blur(15px);
+}
+
+.icon-counter {
+  background-color: inherit;
+  border: var(--icon-color) 1px solid;
+  display: flex;
+  border-radius: 50px;
+  background-color: inherit;
+  color: var(--icon-color);
+  padding: 0.1em 0.25em;
+}
+.icon-counter .counter {
+  font-family: "Courier New", Courier, monospace;
+  bottom: 6px;
+  left: 0.75em;
+}
 
 /*# sourceMappingURL=app.css.map */

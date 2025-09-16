@@ -55,6 +55,7 @@ public class BackupsService
       string pathToUpload = filePath.Substring(filePath.IndexOf(folderName));
       await _azureService.UploadFileAsync(filePath, pathToUpload);
       directory.Files.Add(filePath, new FileBackupRecord(filePath));
+      _appState.NotifyStateChange();
     }
 
     // update files
@@ -64,6 +65,7 @@ public class BackupsService
       string pathToUpload = filePath.Substring(filePath.IndexOf(folderName));
       await _azureService.UploadFileAsync(filePath, pathToUpload);
       directory.Files[filePath] = new FileBackupRecord(filePath);
+      _appState.NotifyStateChange();
     }
 
     // removed files
@@ -73,6 +75,7 @@ public class BackupsService
       string pathToDelete = filePath.Substring(filePath.IndexOf(folderName));
       await _azureService.DeleteFileAsync(pathToDelete);
       directory.Files.Remove(filePath);
+      _appState.NotifyStateChange();
     }
   }
 }
