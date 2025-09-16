@@ -37,7 +37,7 @@ public class AppState : ObservableObject
   public async void NotifyStateChange()
   {
     Console.WriteLine("-.>");
-    if (_dispatcher.IsDispatchRequired)
+    if (_dispatcher != null && _dispatcher.IsDispatchRequired)
     {
       _dispatcher.Dispatch(() => OnChange?.Invoke());
     }

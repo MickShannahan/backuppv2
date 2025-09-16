@@ -12,6 +12,8 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Dispatching;
 using Microsoft.AspNetCore.Components;
+using Quartz;
+using Quartz.Spi;
 namespace backuppv2;
 
 public static class MauiProgram
@@ -74,12 +76,19 @@ public static class MauiProgram
 		builder.Services.AddScoped<BackupsService>();
 		builder.Services.AddSingleton<DirectoryWatcherService>();
 
-		builder.Services.AddSingleton<SchedulerService>();
 
 #if WINDOWS
 		builder.Services.AddSingleton<ITrayService, WinUI.TrayService>();
 		builder.Services.AddSingleton<INotificationService, WinUI.NotificationService>();
+
+		builder.Services.AddSingleton<SchedulerService>();
+		builder.Services.AddQuartz();
+		var serviceProvider = builder.Services.BuildServiceProvider();
+		var schedulerFactory = serviceProvider.GetRequiredService<ISchedulerFactory>();
+		BackupJobSchedule.SetScheduler(schedulerFactory);
 #endif
+
+
 
 
 #if DEBUG
@@ -98,6 +107,8 @@ public static class MauiProgram
 			e.SetObserved();
 		};
 #endif
+
+
 
 		return builder.Build();
 	}

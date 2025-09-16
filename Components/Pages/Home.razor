@@ -2,6 +2,7 @@
 @inject AppState AppState
 @inject SettingsService settingsService
 @inject BackupsService backupsService
+@inject SchedulerService schedulerService
 @using CommunityToolkit.Maui.Storage
 
 
@@ -11,6 +12,7 @@
   <button @onclick=@SelectFolder class="btn btn-primary bg-glass">Link Directory<i
       class="bi bi-folder-plus"></i></button>
   <button class="btn btn-danger bg-glass" @onclick=@BackUpDirectories>BACK UP NOW</button>
+  <button @onclick="@schedulerService.StartSchedule">Schedule Backup <i class="mdi mdi-clock"></i></button>
 </div>
 
 <div class="d-flex mb-2 text-white">
@@ -30,6 +32,7 @@
 @code {
 
   private AppSettings appsettings => AppState.AppSettings;
+
   private Dictionary<string, DirectoryBackup> trackedDirectories => AppState.TrackedDirectories;
 
   protected override void OnInitialized()
