@@ -8,7 +8,7 @@
 			"args": [
 				"build",
 				"-c",
-				"Debug"
+				"Debug",
 			],
 			"isBackground": false,
 			"problemMatcher": "$msCompile",

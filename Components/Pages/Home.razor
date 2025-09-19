@@ -39,6 +39,7 @@
   {
     AppState.OnChange += StateHasChanged;
     settingsService.Load();
+    schedulerService.StartSchedule();
   }
 
   private async Task SelectFolder()

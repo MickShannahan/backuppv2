@@ -1,7 +1,6 @@
 
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml;
 using WinRT.Interop;
 using MauiApp = Microsoft.Maui.Controls.Application;
 using UIWindow = Microsoft.UI.Xaml.Window;

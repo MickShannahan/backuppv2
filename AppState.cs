@@ -34,18 +34,21 @@ public class AppState : ObservableObject
   }
 
 
-  public async void NotifyStateChange()
+  public void NotifyStateChange()
   {
-    Console.WriteLine("-.>");
-    if (_dispatcher != null && _dispatcher.IsDispatchRequired)
+    Console.WriteLine("[update]");
+    MainThread.BeginInvokeOnMainThread(() =>
     {
-      _dispatcher.Dispatch(() => OnChange?.Invoke());
-    }
-    else
-    {
-      OnChange?.Invoke();
-    }
-    _cache?.Save(BackupFile);
+      if (_dispatcher.IsDispatchRequired)
+      {
+        _dispatcher.Dispatch(() => OnChange?.Invoke());
+      }
+      else
+      {
+        OnChange?.Invoke();
+      }
+      _cache?.Save(BackupFile);
+    });
   }
 }
 

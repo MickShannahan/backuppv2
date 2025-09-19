@@ -1,9 +1,4 @@
-﻿using System.Drawing;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui.Platform;
-using Microsoft.UI;
-using Microsoft.UI.Windowing;
-using WinRT.Interop;
+﻿
 namespace backuppv2;
 
 public partial class App : Application

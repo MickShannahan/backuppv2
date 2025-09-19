@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using CommunityToolkit.Maui;
 using Microsoft.Maui;
 using Microsoft.Maui.LifecycleEvents;
-using WinRT.Interop;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
@@ -14,6 +13,8 @@ using Microsoft.UI.Dispatching;
 using Microsoft.AspNetCore.Components;
 using Quartz;
 using Quartz.Spi;
+using System.Threading.Tasks;
+using System.Text;
 namespace backuppv2;
 
 public static class MauiProgram
@@ -64,28 +65,31 @@ public static class MauiProgram
 			 logging.AddDebug();
 		 });
 
+
 		var azureSettings = new AzureSettings();
 		config.GetSection("Azure").Bind(azureSettings);
 		builder.Services.AddSingleton(azureSettings);
 
 		builder.Services.AddMauiBlazorWebView();
+		builder.Services.AddQuartz();
 		builder.Services.AddTransient<CustomWindow>();
 		builder.Services.AddSingleton<AppState>();
 		builder.Services.AddSingleton<SettingsService>();
 		builder.Services.AddScoped<AzureService>();
 		builder.Services.AddScoped<BackupsService>();
 		builder.Services.AddSingleton<DirectoryWatcherService>();
+		// trying to get quartz with DI to work
+		builder.Services.AddSingleton<SchedulerService>();
+		var serviceProvider = builder.Services.BuildServiceProvider();
 
 
 #if WINDOWS
 		builder.Services.AddSingleton<ITrayService, WinUI.TrayService>();
 		builder.Services.AddSingleton<INotificationService, WinUI.NotificationService>();
 
-		builder.Services.AddSingleton<SchedulerService>();
-		builder.Services.AddQuartz();
-		var serviceProvider = builder.Services.BuildServiceProvider();
-		var schedulerFactory = serviceProvider.GetRequiredService<ISchedulerFactory>();
-		BackupJobSchedule.SetScheduler(schedulerFactory);
+
+		// var schedulerFactory = serviceProvider.GetRequiredService<ISchedulerFactory>();
+		// BackupJobSchedule.SetScheduler(schedulerFactory);
 #endif
 
 
@@ -94,11 +98,16 @@ public static class MauiProgram
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
+		Console.OutputEncoding = Encoding.UTF8;
 
 		// 🔴 Global exception hooks here
 		AppDomain.CurrentDomain.UnhandledException += (s, e) =>
 		{
-			System.Diagnostics.Debug.WriteLine($"[UnhandledException] {e.ExceptionObject}");
+			var exception = e.ExceptionObject as Exception;
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine($"[UnhandledException] {exception?.Message}");
+			Console.WriteLine($"[UnhandledException] {exception?.StackTrace}");
+			Console.ResetColor();
 		};
 
 		TaskScheduler.UnobservedTaskException += (s, e) =>
@@ -108,8 +117,25 @@ public static class MauiProgram
 		};
 #endif
 
-
+		InitializeSchedulerServiceAsync(serviceProvider);
 
 		return builder.Build();
+	}
+
+
+
+
+	private static async void InitializeSchedulerServiceAsync(IServiceProvider services)
+	{
+		try
+		{
+			var schedulerService = services.GetRequiredService<SchedulerService>();
+			await schedulerService.SetupAsync();
+			// await schedulerService.StartSchedule();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error initializing SchedulerService: {ex.Message}");
+		}
 	}
 }

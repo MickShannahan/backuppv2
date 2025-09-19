@@ -6,45 +6,58 @@ namespace backuppv2.Services;
 
 public class SchedulerService
 {
+  private readonly ISchedulerFactory _schedulerFactory;
+  private IScheduler _scheduler;
 
-  public SchedulerService()
+  public SchedulerService(ISchedulerFactory factory)
   {
-    // StartSchedule();
+    _schedulerFactory = factory;
   }
 
-  public async void StartSchedule()
+  public async Task SetupAsync()
   {
-    // if (scheduler != null) { return; }
+    Console.WriteLine("Set up scheduler");
+    _scheduler = await _schedulerFactory.GetScheduler();
+    await _scheduler.Start();
+  }
 
-    // scheduler = await Quartz.Impl.StdSchedulerFactory.GetDefaultScheduler();
-    // await scheduler.Start();
+  public async Task StartSchedule()
+  {
+    if (_scheduler == null)
+    {
+      Console.WriteLine("no scheduler");
+      await SetupAsync();
+      // return;
+    }
 
     var job = JobBuilder.Create<BackupJob>()
         .WithIdentity("nightlyBackup", "backup")
         .Build();
-
+    Console.WriteLine("Job Created");
 
     DateTime date = DateTime.Now;
     var trigger = TriggerBuilder.Create()
         .WithIdentity("backupTrigger", "backup")
         .StartNow()
-        .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(date.Hour, date.Minute + 1)) // 2:00 AM
+        .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(date.Hour, date.Minute + 1))
         .Build();
+    Console.WriteLine("Trigger Created");
 
-    // await scheduler.ScheduleJob(job, trigger);
-    await BackupJobSchedule.Scheduler.ScheduleJob(job, trigger);
-    Console.WriteLine("Schedule Created");
-    Console.WriteLine(date.Hour + ":" + (date.Minute + 1));
+    await _scheduler.ScheduleJob(job, trigger);
+    // await BackupJobSchedule.Scheduler.ScheduleJob(job, trigger);
+    Console.WriteLine($" {date.Hour + ":" + (date.Minute + 1)} Job+Trigger Scheduled");
   }
 }
 
 public class BackupJob : IJob
 {
-  private BackupsService backupsService;
+  private BackupsService _backupService;
   public BackupJob(BackupsService backupsService)
   {
-    Console.WriteLine("howdy partner");
-    this.backupsService = backupsService;
+    Console.WriteLine("backup job constructor");
+    Console.WriteLine(_backupService);
+    Console.WriteLine(backupsService);
+    _backupService = backupsService;
   }
 
   public async Task Execute(IJobExecutionContext context)
@@ -52,7 +65,7 @@ public class BackupJob : IJob
     try
     {
       Console.WriteLine("Backing up on schedule");
-      await backupsService.BackUpAllDirectories();
+      await _backupService.BackUpAllDirectories();
     }
     catch (Exception e)
     {

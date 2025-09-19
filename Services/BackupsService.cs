@@ -1,4 +1,3 @@
-using WinRT;
 
 namespace backuppv2.Services;
 
@@ -36,7 +35,7 @@ public class BackupsService
     foreach (DirectoryBackup directory in _appState.TrackedDirectories.Values)
     {
       await BackupDirectory(directory);
-      _appState.NotifyStateChange();
+      // _appState.NotifyStateChange();
     }
   }
 
@@ -54,7 +53,9 @@ public class BackupsService
       Console.WriteLine($"[+]{filePath}");
       string pathToUpload = filePath.Substring(filePath.IndexOf(folderName));
       await _azureService.UploadFileAsync(filePath, pathToUpload);
+      Console.WriteLine($"✔️{filePath}");
       directory.Files.Add(filePath, new FileBackupRecord(filePath));
+      Console.WriteLine("--- added");
       _appState.NotifyStateChange();
     }
 
@@ -64,7 +65,9 @@ public class BackupsService
       Console.WriteLine($"[*]{filePath}");
       string pathToUpload = filePath.Substring(filePath.IndexOf(folderName));
       await _azureService.UploadFileAsync(filePath, pathToUpload);
+      Console.WriteLine($"✔️{filePath}");
       directory.Files[filePath] = new FileBackupRecord(filePath);
+      Console.WriteLine("--- updated");
       _appState.NotifyStateChange();
     }
 
@@ -74,8 +77,17 @@ public class BackupsService
       Console.WriteLine($"[-]{filePath}");
       string pathToDelete = filePath.Substring(filePath.IndexOf(folderName));
       await _azureService.DeleteFileAsync(pathToDelete);
+      Console.WriteLine($"✔️{filePath}");
       directory.Files.Remove(filePath);
       _appState.NotifyStateChange();
+      Console.WriteLine("--- removed");
     }
+
+    Console.WriteLine("✅-- Backup Complete");
+  }
+
+  internal void NotifyStateChange()
+  {
+    _appState.NotifyStateChange();
   }
 }
