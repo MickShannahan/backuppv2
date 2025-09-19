@@ -1,4 +1,5 @@
-﻿<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+﻿<div class="nav-scrollable h-100 d-flex flex-column justify-content-between"
+    onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column g-2">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
@@ -11,4 +12,19 @@
             </NavLink>
         </div>
     </nav>
+    <div>
+        <button @onclick=@QuitApplication class="btn"><i class="mdi mdi-power"></i>Quit</button>
+    </div>
 </div>
+
+@code {
+
+
+    private void QuitApplication()
+    {
+        if (Application.Current is App app)
+        {
+            app.QuitApplication();
+        }
+    }
+}

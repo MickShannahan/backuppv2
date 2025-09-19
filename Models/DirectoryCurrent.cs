@@ -5,6 +5,12 @@ public class DirectoryCurrent
   public string? Name { get; set; }
   public string? FullPath { get; set; }
   public Dictionary<string, FileBackupRecord> Files { get; set; } = [];
+
+  public bool isBusy => currentJobCount < jobCount;
+
+  public int jobCount { get; set; } = 0;
+  public int currentJobCount { get; set; } = 0;
+
   public DateTime? LastBackupTime =>
     Files.Values.OrderByDescending(f => f.LastModifiedUtc).FirstOrDefault()?.LastModifiedUtc;
 

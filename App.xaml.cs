@@ -1,35 +1,52 @@
-﻿
-namespace backuppv2;
+﻿namespace backuppv2;
 
 public partial class App : Application
 {
-	public CustomWindow customWindow { get; }
-	private readonly DirectoryWatcherService _w;
-	private readonly AppState _a;
+	public CustomWindow CustomWindow { get; }
 	private readonly ITrayService _trayService;
 	private readonly INotificationService _notificationService;
-	public App(DirectoryWatcherService watcher, AppState appState, ITrayService trayService, INotificationService notificationService, CustomWindow customWindow)
+
+	private readonly SchedulerService _schedulerService;
+	public bool IsQuitRequested { get; set; } = false;
+
+	public App(ITrayService trayService, INotificationService notificationService, CustomWindow customWindow, SchedulerService schedulerService)
 	{
-		_a = appState;
-		_w = watcher;
+		CustomWindow = customWindow;
 		_trayService = trayService;
 		_notificationService = notificationService;
-		this.customWindow = customWindow;
+		_schedulerService = schedulerService;
+		_ = _schedulerService.StartSchedule(); // Fire-and-forget the async call
 		InitializeComponent();
 	}
 
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		customWindow.Page = new MainPage();
-		// Window window = new Window(new MainPage()) { Title = "backuppv2" };
+		CustomWindow.Page = new MainPage();
+
+		// Intercept close event
+#if WINDOWS
+		CustomWindow.HandlerChanged += (sender, args) =>
+		{
+			if (CustomWindow.Handler?.PlatformView is Microsoft.UI.Xaml.Window window)
+			{
+				window.Closed += (s, e) =>
+				{
+					Console.WriteLine($"❌ {IsQuitRequested}");
+					if (!IsQuitRequested)
+					{
+						e.Handled = true; // Prevent the window from closing
+						var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+						PInvoke.User32.ShowWindow(hwnd, PInvoke.User32.WindowShowStyle.SW_HIDE); // Hide the window
+						WindowExtensions.MinimizeToTray();
+					}
+				};
+			}
+		};
+#endif
+
 		InitializeTrayIcon();
-		// window.X = 0;
-		// window.Y = 0;
-		// window.Height = 200;
-		// window.Width = 600;
-		// return window;
-		return customWindow;
+		return CustomWindow;
 	}
 
 	protected override void OnStart()
@@ -47,31 +64,31 @@ public partial class App : Application
 
 	private void OnTrayOpenClick()
 	{
-		Console.WriteLine("Clicked");
-		_notificationService.ShowNotification("Sup", "Cool");
-		var popupPage = new PopupWindow();
-		var displayInfo = DeviceDisplay.Current.MainDisplayInfo;
-		var secondWindow = new Window(popupPage)
-		{
-			Width = 300,
-			Height = 600,
-			X = displayInfo.Width - 300,
-			Y = displayInfo.Height - 600,
-		};
+		// _notificationService.ShowNotification("Sup", "Cool");
 
-		App.Current?.OpenWindow(secondWindow);
-		// var window = Application.Current.Windows.FirstOrDefault();
-		// if (window != null)
-		// {
-		// 	if (window.Visible)
-		// 		window.Hide();
-		// 	else
-		// 		window.Show();
-		// }
+		if (Current?.Windows != null)
+		{
+			var mainWindow = Current.Windows.FirstOrDefault();
+			if (mainWindow != null)
+			{
+				// WindowExtensions.BringToFront();
+			}
+			else
+			{
+				CustomWindow.Page = new MainPage();
+				Current.OpenWindow(CustomWindow);
+			}
+		}
 	}
 
 	private void OnTrayExitClick()
 	{
+		QuitApplication();
+	}
+
+	public void QuitApplication()
+	{
+		IsQuitRequested = true; // Set the flag to allow quitting
 		Current?.Quit();
 	}
 

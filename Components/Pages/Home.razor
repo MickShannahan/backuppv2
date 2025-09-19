@@ -3,7 +3,9 @@
 @inject SettingsService settingsService
 @inject BackupsService backupsService
 @inject SchedulerService schedulerService
+@inject ILogger logger
 @using CommunityToolkit.Maui.Storage
+@using Microsoft.Extensions.Logging
 
 
 <div class="d-flex flex-wrap g-2 border-bottom">
@@ -12,7 +14,7 @@
   <button @onclick=@SelectFolder class="btn btn-primary bg-glass">Link Directory<i
       class="bi bi-folder-plus"></i></button>
   <button class="btn btn-danger bg-glass" @onclick=@BackUpDirectories>BACK UP NOW</button>
-  <button @onclick="@schedulerService.StartSchedule">Schedule Backup <i class="mdi mdi-clock"></i></button>
+  <button @onclick="@logTheThing">Log test <i class="mdi mdi-clock"></i></button>
 </div>
 
 <div class="d-flex mb-2 text-white">
@@ -35,11 +37,15 @@
 
   private Dictionary<string, DirectoryBackup> trackedDirectories => AppState.TrackedDirectories;
 
+  private void logTheThing()
+  {
+    logger.Log(LogLevel.Error, "OH NO");
+  }
+
   protected override void OnInitialized()
   {
     AppState.OnChange += StateHasChanged;
     settingsService.Load();
-    schedulerService.StartSchedule();
   }
 
   private async Task SelectFolder()

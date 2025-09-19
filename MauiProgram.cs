@@ -15,6 +15,11 @@ using Quartz;
 using Quartz.Spi;
 using System.Threading.Tasks;
 using System.Text;
+#if WINDOWS
+using Microsoft.UI.Xaml;
+using WinRT.Interop;
+using PInvoke;
+#endif
 namespace backuppv2;
 
 public static class MauiProgram
@@ -26,7 +31,7 @@ public static class MauiProgram
 		using var mutex = new Mutex(true, "MyBackupAppMutex", out bool isNewInstance);
 		if (!isNewInstance)
 		{
-			return null;
+			Environment.Exit(0); // Exit the application if another instance is running
 		}
 
 		var builder = MauiApp.CreateBuilder();
@@ -41,7 +46,6 @@ public static class MauiProgram
 
 		builder.ConfigureLifecycleEvents(events =>
 					 {
-#if WINDOWS
 						 events.AddWindows(windowsLifecycleBuilder =>
 							{
 								windowsLifecycleBuilder.OnWindowCreated(window =>
@@ -49,7 +53,6 @@ public static class MauiProgram
 									 window.SystemBackdrop = new MicaBackdrop();
 								 });
 							});
-#endif
 					 });
 
 
@@ -78,6 +81,7 @@ public static class MauiProgram
 		builder.Services.AddScoped<AzureService>();
 		builder.Services.AddScoped<BackupsService>();
 		builder.Services.AddSingleton<DirectoryWatcherService>();
+		builder.Services.AddSingleton<ILogger, Logger>();
 		// trying to get quartz with DI to work
 		builder.Services.AddSingleton<SchedulerService>();
 		var serviceProvider = builder.Services.BuildServiceProvider();
@@ -90,6 +94,8 @@ public static class MauiProgram
 
 		// var schedulerFactory = serviceProvider.GetRequiredService<ISchedulerFactory>();
 		// BackupJobSchedule.SetScheduler(schedulerFactory);
+
+
 #endif
 
 

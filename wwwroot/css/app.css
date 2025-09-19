@@ -12980,4 +12980,14 @@ body {
   left: 0.75em;
 }
 
+.directory-card {
+  min-width: 200px;
+  max-width: 50%;
+}
+
+.card-disabled {
+  pointer-events: none;
+  filter: contrast(0.9);
+}
+
 /*# sourceMappingURL=app.css.map */

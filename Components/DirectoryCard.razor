@@ -1,34 +1,43 @@
 @inject BackupsService backupsService
 
-<article class="card bg-dark bg-glass mb-2" style="min-width: 200px; max-width: 50%; flex-grow: 1">
-  <div class="card-body">
-    <section class="d-flex justify-content-between">
-      <div><i class="mdi mdi-folder fs-5"></i> @directory.Name</div>
-      <div>
-        <button @onclick=@RemoveTrackedDirectory class="btn btn-outline-danger border-0"><i
-            class="mdi mdi-delete-forever"></i></button>
-      </div>
-    </section>
-    <hr>
-    <div class="d-flex justify-content-between" style="--icon-color: var(--bs-primary)">
-      <div title="backed up files" class="icon-counter">
-        <i class="mdi mdi-file"></i>
-        <span class="counter">@directory.FileCount</span>
-      </div>
-      <div title="new files" class="icon-counter" style="--icon-color: var(--bs-info)">
-        <i class="mdi mdi-file-plus"></i>
-        <span class="counter">@directory.NewFiles.Count</span>
-      </div>
-      <div title="new files" class="icon-counter" style="--icon-color: var(--bs-indigo)">
-        <i class="mdi mdi-file-alert"></i>
-        <span class="counter">@directory.ChangedFiles.Count</span>
-      </div>
-      <div title="missing files" class="icon-counter" style="--icon-color: var(--bs-orange)">
-        <i class="mdi mdi-file-minus"></i>
-        <span class="counter">@directory.MissingFiles.Count</span>
-      </div>
-
+<article class="card bg-dark bg-glass mb-2 @cardDisabled">
+  <div class=" card-body">
+  <section class="d-flex justify-content-between">
+    <div><i class="mdi mdi-folder fs-5"></i> @directory.Name</div>
+    <div>
+      <button @onclick=@RemoveTrackedDirectory class="btn btn-outline-danger border-0"><i
+          class="mdi mdi-delete-forever"></i></button>
     </div>
+  </section>
+  <hr>
+  <div class="d-flex justify-content-between" style="--icon-color: var(--bs-primary)">
+    <div title="backed up files" class="icon-counter">
+      <i class="mdi mdi-file"></i>
+      <span>@directory.Files.Count</span>
+    </div>
+    <div class="d-flex w-100 ps-1 align-items-center">
+      @if (directory.isBusy)
+      {
+        <div class="progress w-100">
+          <div class="progress-bar bg-indigo" style="@uploadProgress">
+            <span>@remainingJobs</span>
+          </div>
+        </div>
+      }
+      else
+      {
+        <div class="border mx-1">
+          @directory.NewFiles.Count
+        </div>
+        <div class="border mx-1">
+          @directory.ChangedFiles.Count
+        </div>
+        <div class="border mx-1">
+          @directory.MissingFiles.Count
+        </div>
+      }
+    </div>
+  </div>
   </div>
 </article>
 
@@ -37,7 +46,10 @@
   [Parameter, Required]
   public DirectoryBackup directory { get; set; }
 
+  private string uploadProgress => $"width: {((double)directory.currentJobCount / (double)directory.jobCount) * 100d}%;";
+  private int remainingJobs => directory.jobCount - directory.currentJobCount;
 
+  private string cardDisabled => directory.isBusy ? "card-disabled" : "";
 
   public void RemoveTrackedDirectory()
   {

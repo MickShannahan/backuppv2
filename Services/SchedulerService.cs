@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using backuppv2.WinUI;
+using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace backuppv2.Services;
@@ -51,13 +53,18 @@ public class SchedulerService
 
 public class BackupJob : IJob
 {
-  private BackupsService _backupService;
-  public BackupJob(BackupsService backupsService)
+  private readonly BackupsService _backupService;
+  private readonly INotificationService _notificationService;
+
+  private readonly ILogger logger;
+  public BackupJob(BackupsService backupsService, INotificationService notificationService, ILogger logger)
   {
     Console.WriteLine("backup job constructor");
     Console.WriteLine(_backupService);
     Console.WriteLine(backupsService);
     _backupService = backupsService;
+    _notificationService = notificationService;
+    this.logger = logger;
   }
 
   public async Task Execute(IJobExecutionContext context)
@@ -66,23 +73,11 @@ public class BackupJob : IJob
     {
       Console.WriteLine("Backing up on schedule");
       await _backupService.BackUpAllDirectories();
+      _notificationService.ShowNotification("Back up Finished on Schedule", "");
     }
     catch (Exception e)
     {
-      Console.WriteLine(e);
+      logger.Log(LogLevel.Error, "📆 " + e.Message);
     }
-  }
-}
-
-public static class BackupJobSchedule
-{
-  public static IScheduler Scheduler;
-
-  public async static void SetScheduler(ISchedulerFactory schedulerFactory)
-  {
-    var scheduler = await schedulerFactory.GetScheduler();
-    Scheduler = scheduler;
-    await Scheduler.Start();
-    Console.WriteLine("schedule setup");
   }
 }

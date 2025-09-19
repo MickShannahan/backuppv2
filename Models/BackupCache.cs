@@ -1,3 +1,4 @@
+
 namespace backuppv2.Models;
 
 
@@ -59,8 +60,35 @@ public class BackupCache
 
   public void Save(string path)
   {
-    var json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-    File.WriteAllText(path, json);
+    try
+    {
+      SaveWithDebounce(path);
+    }
+    catch (Exception e)
+    {
+      Console.WriteLine("HHOOOOLLEEEE SHEEEEIIIIIT");
+      Console.WriteLine(e.Message);
+    }
   }
 
+  private Timer? _saveDebounceTimer;
+  private readonly object _saveLock = new();
+
+  public void SaveWithDebounce(string path, int debounceMilliseconds = 500)
+  {
+    lock (_saveLock)
+    {
+      _saveDebounceTimer?.Dispose();
+      _saveDebounceTimer = new Timer(_ =>
+      {
+        lock (_saveLock)
+        {
+          var json = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
+          File.WriteAllText(path, json);
+          _saveDebounceTimer?.Dispose();
+          _saveDebounceTimer = null;
+        }
+      }, null, debounceMilliseconds, Timeout.Infinite);
+    }
+  }
 }
